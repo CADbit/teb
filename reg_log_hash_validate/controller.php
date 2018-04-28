@@ -1,12 +1,13 @@
 <?php
 
-		
-		
+		$login_string = $_POST['login'];
 		$exist = 0;
 		$same_pass = 0;
 		$wrong_password = 0;
 		$wrong_login = 0;
 		$bot_check = 0;
+		$ctype = 1;
+		
 
 		// SPRAWDZAMY CZY W BAZIE DANYCH ISTNIEJE UŻYTKOWNIK O TAKIM LOGINIE
 		$login_check = "SELECT * FROM dbteb.users WHERE id = '$_POST[login]'";
@@ -16,6 +17,15 @@
 			echo "<strong><font color='red'>Login jest już zajęty. Wybierz inny!</font></strong><br><br>";
 
 		}
+
+
+		// SPRAWDZAMY CZY LOGIN ZAWIERA NIEDOZWOLONE ZNAKI SPECJALNE
+		if (ctype_alnum($login_string)) {
+
+			$ctype = 0;
+
+		}
+
 
 		// SPRAWDZAMY CZY HASŁA W OBU POLACH SĄ JEDNAKOWE
 		if ($_POST['password'] != $_POST['password2']) {
@@ -44,10 +54,13 @@
 
 			echo "<strong><font color='red'>Wynik obliczeń jest niepoprawny. Jesteś botem?</font></strong><br><br>";
 			$bot_check = 1;
-		}
 
+		} elseif (!ctype_alnum($login_string)) {
 
-		elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $bot_check == 0) {
+			echo "<strong><font color='red'>Login nie może zawierać znaków specjalnych!</font></strong><br><br>";
+			$ctype = 1;
+
+		} elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $bot_check == 0 && $ctype == 0) {
 
 			$imie = $_POST['imie'];
 			$nazwisko = $_POST['nazwisko'];
