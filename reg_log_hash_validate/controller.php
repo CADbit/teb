@@ -30,7 +30,7 @@
 			$same_pass = 1;
 			$wrong_pasword = 1;
 
-		} elseif (strlen($_POST['password']) < 1) {
+		} elseif (strlen($_POST['password']) < 8) {
 
 			echo "<strong><font color='red'>Hasła jest za krótkie! Minimalna długość hasła to 8 znaków</font></strong><br><br>";
 			$wrong_pasword = 1;
