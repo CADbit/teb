@@ -7,7 +7,8 @@
 		$wrong_login = 0;
 		$bot_check = 0;
 		$ctype = 1;
-		
+		$email_check = 0;
+		$email_check2 = 0;
 
 		// SPRAWDZAMY CZY W BAZIE DANYCH ISTNIEJE UŻYTKOWNIK O TAKIM LOGINIE
 		$login_check = "SELECT * FROM dbteb.users WHERE id = '$_POST[login]'";
@@ -26,7 +27,6 @@
 
 		}
 
-
 		// SPRAWDZAMY CZY HASŁA W OBU POLACH SĄ JEDNAKOWE
 		if ($_POST['password'] != $_POST['password2']) {
 
@@ -40,12 +40,12 @@
 			$same_pass = 1;
 			$wrong_pasword = 1;
 
-		} elseif (strlen($_POST['password']) < 8) {
+		} elseif (strlen($_POST['password']) < 8) { // WALIDACJA DŁUGOŚCI HASŁA
 
 			echo "<strong><font color='red'>Hasła jest za krótkie! Minimalna długość hasła to 8 znaków</font></strong><br><br>";
 			$wrong_pasword = 1;
 
-		} elseif (strlen($_POST['login']) < 5) {
+		} elseif (strlen($_POST['login']) < 5) { // WALIDACJA DŁUGOŚCI LOGINU
 
 			echo "<strong><font color='red'>Login jest za krótki! Minimalna długość loginu to 5 znaków</font></strong><br><br>";
 			$wrong_login = 1;
@@ -55,18 +55,29 @@
 			echo "<strong><font color='red'>Wynik obliczeń jest niepoprawny. Jesteś botem?</font></strong><br><br>";
 			$bot_check = 1;
 
-		} elseif (!ctype_alnum($login_string)) {
+		} elseif (!ctype_alnum($login_string)) { // WALIDACJA ZNAKÓW SPECJALNYCH
 
 			echo "<strong><font color='red'>Login nie może zawierać znaków specjalnych!</font></strong><br><br>";
 			$ctype = 1;
 
-		} elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $bot_check == 0 && $ctype == 0) {
+		} elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) { // WALIDACJA ADRESU EMAIL
+
+			echo "<strong><font color='red'>Podaj poprawny adres email!</font></strong><br><br>";
+			$email_check = 1;
+
+		} elseif (!filter_var($_POST['email'], FILTER_SANITIZE_EMAIL)) { // OCHRONA PRZED WSTRZYKIWANIEM NIEDOZWOLONYCH ZNAKÓW W ADRESIE EMAIL
+
+			echo "<strong><font color='red'>Podaj poprawny adres email!</font></strong><br><br>";
+			$email_check2 = 1;
+
+		} elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $ctype == 0 && $email_check == 0 && $email_check2 == 0) {
 
 			$imie = $_POST['imie'];
 			$nazwisko = $_POST['nazwisko'];
 			$pass = md5($_POST['password']);
 			$login = $_POST['login'];
-			$sql = "INSERT INTO dbteb.users (id, firstname, lastname, password) VALUES ('$login', '$imie', '$nazwisko', '$pass')";
+			$email = $_POST['email'];
+			$sql = "INSERT INTO dbteb.users (id, firstname, lastname, password, email) VALUES ('$login', '$imie', '$nazwisko', '$pass', '$email')";
 			$result = mysqli_query($connection, $sql);
 			echo "<strong><font color='green'>Użytkownik został zarejestrowany!</font></strong><br><br>";
 			$imie = "";
