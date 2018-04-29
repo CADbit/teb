@@ -1,0 +1,2 @@
+pear install HTML_Table
+pear install HTML_Common
