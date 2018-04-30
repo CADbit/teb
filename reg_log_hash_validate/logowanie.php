@@ -22,16 +22,15 @@ $dbname = "dbteb";
 
 $connection = mysqli_connect($host, $user, $password, $dbname) or die ("Nie można połączyć się z bazą danych");
 
-// POBIERAMY HASH UŻYTKOWNIKA I SPRAWDZAMY CZY JEST PRAWIDŁOWY - ALGORYTM MD5
+// POBIERAMY HASH UŻYTKOWNIKA I SPRAWDZAMY CZY JEST PRAWIDŁOWY - ALGORYTM BCRYPT
 
 $hash = "SELECT password FROM dbteb.users WHERE id = '$login'";
 $hash_result = mysqli_query($connection, $hash);
 $hash_result1 = mysqli_fetch_array($hash_result);
 $hash_result2 = $hash_result1['password'];
-$pass_hash = md5($pass);
 
-        if ($pass_hash == $hash_result2) {
-            $sql = "SELECT * FROM dbteb.users WHERE id = '$login' AND password = '$pass_hash'";
+        if (password_verify($pass, $hash_result2)) {
+            $sql = "SELECT * FROM dbteb.users WHERE id = '$login' AND password = '$hash_result2'";
             $result = mysqli_query($connection, $sql);
             $result1 = mysqli_fetch_array($result);
 
@@ -48,7 +47,6 @@ $pass_hash = md5($pass);
                     }
 
                     mysqli_close($connection);
-
 
                 } else {
                     

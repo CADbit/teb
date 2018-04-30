@@ -74,7 +74,7 @@
 
 			$imie = $_POST['imie'];
 			$nazwisko = $_POST['nazwisko'];
-			$pass = md5($_POST['password']);
+			$pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
 			$login = $_POST['login'];
 			$email = $_POST['email'];
 			$sql = "INSERT INTO dbteb.users (id, firstname, lastname, password, email) VALUES ('$login', '$imie', '$nazwisko', '$pass', '$email')";
