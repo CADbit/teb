@@ -9,6 +9,21 @@
 		$ctype = 1;
 		$email_check = 0;
 		$email_check2 = 0;
+		$captcha_check = 1;
+
+		// WERYFIKUJEMY RECAPTCHA
+		$captcha_secret_key = "6LfHHFYUAAAAAAMwegm6ms6cKgKXzrt9R1C0uTgn";
+		$response_key = $_POST['g-recaptcha-response'];
+		$host_ip = $_SERVER['REMOTE ADDR'];
+		$url = "https://www.google.com/recaptcha/api/siteverify?secret=$captcha_secret_key&response=$response_key&remoteip=$host_ip";
+		$response = file_get_contents($url);
+		$response_verify = json_decode($response);
+
+		if ($response_verify->success) {
+
+			$captcha_check = 0;
+
+		}
 
 		// SPRAWDZAMY CZY W BAZIE DANYCH ISTNIEJE UŻYTKOWNIK O TAKIM LOGINIE
 		$login_check = "SELECT * FROM dbteb.users WHERE id = '$_POST[login]'";
@@ -18,7 +33,6 @@
 			echo "<strong><font color='red'>Login jest już zajęty. Wybierz inny!</font></strong><br><br>";
 
 		}
-
 
 		// SPRAWDZAMY CZY LOGIN ZAWIERA NIEDOZWOLONE ZNAKI SPECJALNE
 		if (ctype_alnum($login_string)) {
@@ -70,7 +84,11 @@
 			echo "<strong><font color='red'>Podaj poprawny adres email!</font></strong><br><br>";
 			$email_check2 = 1;
 
-		} elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $ctype == 0 && $email_check == 0 && $email_check2 == 0) {
+		} elseif ($captcha_check == 1) {
+
+			echo "<strong><font color='red'>Czy jesteś botem?</font></strong><br><br>";
+
+		} elseif ($exist == 0 && $same_pass == 0 && $wrong_password == 0 && $wrong_login == 0 && $ctype == 0 && $email_check == 0 && $email_check2 == 0 && $captcha_check == 0) {
 
 			$imie = $_POST['imie'];
 			$nazwisko = $_POST['nazwisko'];
